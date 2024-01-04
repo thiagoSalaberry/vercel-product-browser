@@ -25,7 +25,8 @@ export default methods({
             const allRecords = await productsIndex.search("false");
             res.json({
                 message: "Terminó las sync",
-                amount: allRecords.hits.length
+                amount: allRecords.hits.length,
+                records: allRecords.hits
             })
         })
     }
