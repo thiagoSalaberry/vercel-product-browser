@@ -5,10 +5,6 @@ import methods from "micro-method-router";
 import { base } from "../../../lib/airtable";
 import { productsIndex } from "../../../lib/algolia";
 export default methods({
-    // async get(req:NextApiRequest, res: NextApiResponse) {
-    //     const allRecords = await productsIndex.search("false");
-    //     res.send("cron-job");
-    // },
     async get(req:NextApiRequest, res:NextApiResponse) {
         base("Productos").select({pageSize: 3}).eachPage(async function(records, fetchNextPage) {
             const recordsForAlgolia = records.map(r => {                
@@ -22,12 +18,7 @@ export default methods({
             fetchNextPage();
         }, async function done(err) {
             if (err) { console.error(err); return ; };
-            const allRecords = await productsIndex.search("false");
-            res.json({
-                message: "Terminó las sync",
-                amount: allRecords.hits.length,
-                records: allRecords.hits
-            })
+            res.send("La sincronización se realizó con éxito");
         })
     }
 })

@@ -1,25 +1,28 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getQuery } from "../../../lib/getQuery";
+import { getLimitAndOffset } from "../../../lib/getQuery";
 import { productsIndex } from "../../../lib/algolia";
 import methods from "micro-method-router";
 export default methods({
-    async delete(res:NextApiResponse) {
-        await productsIndex.clearObjects();
-        res.send("Se limpiaron los records")
+    async get(req:NextApiRequest, res:NextApiResponse) {
+        const algoliaRecords = await productsIndex.search(req.query.q as string);
+        const {limit, offset} = getLimitAndOffset(req, 3, algoliaRecords.hits.length);
+        const results = algoliaRecords.hits.map((p:any) => {
+            return {
+                id: p.objectID,
+                title: p.title,
+                description: p.description,
+                stock: p.stock,
+                price: p.price,
+                tags: p.tags
+            }
+        });
+        res.status(200).json({
+            results: results.slice(offset, limit + offset),
+            pagination: {
+                offset,
+                limit,
+                total: results.length
+            }
+        })
     }
-}) 
-// export default async function(req:NextApiRequest, res:NextApiResponse) {
-//     const query = getQuery(req, 10, 5);
-//     const brand = query.q;
-//     const response = await productsIndex.search(brand as string);
-//     const products = response.hits.map((p:any) => {
-//         return {
-//             productID: p.objectID,
-//             name: p.name,
-//             description: p.description,
-//             brand: p.brand,
-//             price: p.price
-//         }
-//     })
-//     res.send(query)
-// }
+});
