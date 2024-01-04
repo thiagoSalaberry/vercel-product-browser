@@ -7,7 +7,7 @@ import { productsIndex } from "../../../lib/algolia";
 export default methods({
     async get(req:NextApiRequest, res: NextApiResponse) {
         const allRecords = await productsIndex.search("false");
-        res.send(allRecords.hits)
+        res.send("cron-job");
     },
     async post(req:NextApiRequest, res:NextApiResponse) {
         base("Productos").select({pageSize: 3}).eachPage(async function(records, fetchNextPage) {
