@@ -6,12 +6,12 @@ import { base } from "../../../lib/airtable";
 import { productsIndex } from "../../../lib/algolia";
 export default methods({
     async get(req:NextApiRequest, res: NextApiResponse) {
-        const allRecords = await productsIndex.search("true");
+        const allRecords = await productsIndex.search("false");
         res.send(allRecords.hits)
     },
     async post(req:NextApiRequest, res:NextApiResponse) {
         base("Productos").select({pageSize: 3}).eachPage(async function(records, fetchNextPage) {
-            const recordsForAlgolia = records.map(r => {
+            const recordsForAlgolia = records.map(r => {                
                 return {
                     objectID: r.id,
                     ...r.fields
